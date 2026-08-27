@@ -32,6 +32,10 @@ class RecipeAPITestCaseHappy(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+    def test_recipe_string(self):
+        self.assertEqual(str(self.recipe), "Pizza")
+
+
 class RecipeAPITestCaseUnhappy(APITestCase):
 
     def setUp(self):
