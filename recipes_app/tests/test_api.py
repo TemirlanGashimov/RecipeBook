@@ -37,6 +37,8 @@ class RecipeAPITestCaseUnhappy(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='testuser', password='testpassword')
+        self.recipe = Recipe.objects.create(
+            title="Pizza", description="Tunfisch Pizza", author=self.user)
 
     def test_list_post_recipe(self):
         url = reverse('recipe-list')
@@ -46,4 +48,9 @@ class RecipeAPITestCaseUnhappy(APITestCase):
                 }
         response = self.client.post(url, data, format="json")
 
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_recipe_detail_authenticated(self):
+        url = reverse('recipe-detail', kwargs={'pk': self.recipe.id})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
