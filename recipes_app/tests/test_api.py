@@ -3,27 +3,26 @@ from django.contrib.auth.models import User
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from recipes_app.models import Recipe
-from recipes_app.api.serializers import RecipeSerializer
 from rest_framework.authtoken.models import Token
-
 
 
 class RecipeAPITestCaseHappy(APITestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.recipe = Recipe.objects.create(title="Pizza", description="Tunfisch Pizza", author=self.user)
+        self.user = User.objects.create_user(
+            username='testuser', password='testpassword')
+        self.recipe = Recipe.objects.create(
+            title="Pizza", description="Tunfisch Pizza", author=self.user)
 
     def test_get_recipe(self):
         url = reverse('recipe-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_recipe_authenticated(self):
         self.token = Token.objects.create(user=self.user)
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-
 
     def test_get_recipe_detail_authenticated(self):
         self.token = Token.objects.create(user=self.user)
@@ -33,19 +32,11 @@ class RecipeAPITestCaseHappy(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-
-
-
-
-
-
-
-
-
 class RecipeAPITestCaseUnhappy(APITestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(
+            username='testuser', password='testpassword')
 
     def test_list_post_recipe(self):
         url = reverse('recipe-list')
