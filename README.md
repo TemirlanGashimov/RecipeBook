@@ -1,15 +1,15 @@
 # RecipeBook
 
-RecipeBook ist eine Django-REST-API zum Verwalten von Rezepten. Rezepte enthalten einen Titel, eine Beschreibung, einen Erstellungszeitpunkt und einen Autor.
+A Django REST API for managing recipes with token-based authentication. Each recipe includes a title, description, creation date, and author information.
 
-## Voraussetzungen
+## Prerequisites
 
-- Python 3.12 oder neuer
-- Eine aktivierte virtuelle Umgebung
+- Python 3.12 or higher
+- Virtual environment (recommended)
 
-## Installation
+## Setup Instructions
 
-Repository klonen oder in das Projektverzeichnis wechseln und anschließend eine virtuelle Umgebung erstellen:
+### 1. Create and Activate Virtual Environment
 
 ```powershell
 python -m venv .venv
@@ -17,95 +17,131 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Datenbankmigrationen ausführen:
+### 2. Run Database Migrations
 
 ```powershell
 python manage.py migrate
 ```
 
-Optional kann ein Admin-Benutzer angelegt werden:
+### 3. Create an Admin User (Optional)
 
 ```powershell
 python manage.py createsuperuser
 ```
 
-## Anwendung starten
+## Running the Application
+
+Start the development server:
 
 ```powershell
 python manage.py runserver
 ```
 
-Die API ist anschließend unter [http://127.0.0.1:8000/api/](http://127.0.0.1:8000/api/) erreichbar. Das Django-Admin-Interface befindet sich unter [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/).
+The application will be available at:
 
-## Authentifizierung
+- **API Endpoint:** `http://127.0.0.1:8000/api/recipes-list/`
+- **Admin Dashboard:** `http://127.0.0.1:8000/admin/`
 
-Alle API-Endpunkte benötigen eine Token-Authentifizierung. Für einen vorhandenen Benutzer kann im Django-Shell ein Token erstellt werden:
+## Authentication
+
+All API endpoints require token-based authentication. Follow these steps to create and use a token:
+
+### Generating a Token
+
+1. Open the Django shell:
 
 ```powershell
 python manage.py shell
 ```
 
+2. Create a token for your user:
+
 ```python
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
-user = User.objects.get(username="DEIN_BENUTZERNAME")
+user = User.objects.get(username="YOUR_USERNAME")
 token, created = Token.objects.get_or_create(user=user)
 print(token.key)
 ```
 
-Das Token wird bei API-Anfragen im `Authorization`-Header übergeben:
+### Using the Token
+
+Include the token in the `Authorization` header for all API requests:
 
 ```text
-Authorization: Token DEIN_TOKEN
+Authorization: Token YOUR_TOKEN_KEY
 ```
 
-## API-Endpunkte
+## API Endpoints
 
-Basis-URL: `http://127.0.0.1:8000/api/recipes-list/`
+### Base URL
 
-| Methode | URL | Beschreibung |
+```text
+http://127.0.0.1:8000/api/recipes-list/
+```
+
+### Available Endpoints
+
+| HTTP Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/api/recipes-list/` | Alle Rezepte abrufen |
-| `POST` | `/api/recipes-list/` | Ein Rezept erstellen |
-| `GET` | `/api/recipes-list/<id>/` | Ein Rezept abrufen |
-| `PUT` | `/api/recipes-list/<id>/` | Ein Rezept vollständig aktualisieren |
-| `PATCH` | `/api/recipes-list/<id>/` | Ein Rezept teilweise aktualisieren |
-| `DELETE` | `/api/recipes-list/<id>/` | Ein Rezept löschen |
+| `GET` | `/api/recipes-list/` | Retrieve all recipes |
+| `POST` | `/api/recipes-list/` | Create a new recipe |
+| `GET` | `/api/recipes-list/<id>/` | Retrieve a specific recipe |
+| `PUT` | `/api/recipes-list/<id>/` | Replace an entire recipe |
+| `PATCH` | `/api/recipes-list/<id>/` | Partially update a recipe |
+| `DELETE` | `/api/recipes-list/<id>/` | Delete a recipe |
 
-Beispiel für eine Anfrage zum Erstellen eines Rezepts:
+### Recipe Fields
+
+- `id` - Unique identifier
+- `title` - Recipe name
+- `description` - Recipe details
+- `created_at` - Creation timestamp
+- `author` - Author ID
+
+### Example: Create a Recipe
 
 ```powershell
 curl.exe -X POST http://127.0.0.1:8000/api/recipes-list/ `
-  -H "Authorization: Token DEIN_TOKEN" `
+  -H "Authorization: Token YOUR_TOKEN" `
   -H "Content-Type: application/json" `
-  -d '{"title":"Pizza","description":"Tunfisch Pizza","author":1}'
+  -d '{"title":"Pizza","description":"Delicious Tuna Pizza","author":1}'
 ```
 
-Die API liefert folgende Rezeptfelder zurück:
+## Testing
 
-- `id`
-- `title`
-- `description`
-- `created_at`
-- `author`
+### Run Tests
 
-## Tests
-
-Die Tests werden mit Django ausgeführt:
+Execute all tests with Django:
 
 ```powershell
 python manage.py test
 ```
 
-## Projektstruktur
+### Generate Test Coverage Report
+
+Run tests with coverage tracking:
+
+```powershell
+coverage run manage.py test
+```
+
+Display the detailed coverage report:
+
+```powershell
+coverage report -m
+```
+
+## Project Structure
 
 ```text
-core/                Django-Projekt und Einstellungen
-recipes_app/         Rezepte-App
-recipes_app/api/     Serializer, Views und API-Routen
-recipes_app/tests/   API-Tests
-db.sqlite3           SQLite-Datenbank
-manage.py            Django-Verwaltungsskript
-requirements.txt     Python-Abhängigkeiten
+core/                     Django project settings and configuration
+recipes_app/              Main recipe application module
+recipes_app/api/          API serializers, views, and URL routing
+recipes_app/tests/        Unit and integration tests
+db.sqlite3                SQLite database file
+manage.py                 Django management script
+requirements.txt          Python package dependencies
+README.md                 This file
 ```
