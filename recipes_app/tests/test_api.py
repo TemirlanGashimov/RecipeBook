@@ -23,6 +23,14 @@ class RecipeAPITestCaseHappy(APITestCase):
         self.token = Token.objects.create(user=self.user)
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        url = reverse('recipe-list')
+        data = {
+                'title': 'Pizza',
+                'description': 'Tunfisch Pizza',
+                'author': self.user.id
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_get_recipe_detail_authenticated(self):
         self.token = Token.objects.create(user=self.user)
@@ -54,7 +62,7 @@ class RecipeAPITestCaseUnhappy(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_get_recipe_detail_authenticated(self):
+    def test_get_recipe_detail_unauthenticated(self):
         url = reverse('recipe-detail', kwargs={'pk': self.recipe.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
